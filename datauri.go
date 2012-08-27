@@ -80,8 +80,10 @@ func main() {
     panic(err)
   }
 
+  w := base64.NewEncoder(base64.StdEncoding, os.Stdout)
   fmt.Printf("data:%s;base64,", t)
-  if _, err := io.Copy(base64.NewEncoder(base64.StdEncoding, os.Stdout), nr); err != nil {
+  if _, err := io.Copy(w, nr); err != nil {
     panic(err)
   }
+  w.Close()
 }
