@@ -6,19 +6,12 @@ import (
   "flag"
   "fmt"
   "io"
+  "mime"
   "net/http"
   "net/url"
   "os"
   "path/filepath"
 )
-
-var mimeMap = map[string]string{
-  ".png": "image/png",
-  ".jpg": "image/jpg",
-  ".gif": "image/gif",
-  ".bmp": "image/bmp",
-  "":     "application/octet-stream",
-}
 
 func sniffContent(r io.Reader) (string, io.Reader, error) {
   // read the first 512 bytes
@@ -45,7 +38,11 @@ func sniff(filename string, r io.Reader) (string, io.Reader, error) {
     return t, r, nil
   }
 
-  return mimeMap[filepath.Ext(filename)], r, nil
+  t = mime.TypeByExtension(filepath.Ext(filename))
+  if t == "" {
+    t = "application/octet-stream"
+  }
+  return t, r, nil
 }
 
 func open(name string) (io.ReadCloser, error) {
